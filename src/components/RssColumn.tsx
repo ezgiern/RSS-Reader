@@ -201,7 +201,10 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
         feedItems.map((item, index) => (
           <div key={index} className="mb-4 border-b pb-4">
             <h3 className="font-semibold text-lg mt-2">{item.title}</h3>
-            <p className="text-sm">{item.description}</p>
+            <p
+              className="text-sm"
+              dangerouslySetInnerHTML={{ __html: item.description }}
+            />
             <p className="text-xs text-gray-600">{item.pubDate}</p>
             <a
               href={item.link}
