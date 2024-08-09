@@ -121,6 +121,10 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
     setIsOpen(false);
   };
 
+  const handleImageClick = (link: string) => {
+    window.open(link, "_blank");
+  };
+
   const settings = {
     dots: false,
     infinite: true,
@@ -170,15 +174,16 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
       >
         <div className="w-full h-full max-w-5xl p-4 bg-white rounded-lg">
           <Slider {...settings}>
-            {galleryImages.map((imageUrl, index) => (
+            {feedItems.map((item, index) => (
               <div
                 key={index}
                 className="flex justify-center items-center h-full"
               >
                 <img
-                  src={imageUrl}
+                  src={item.imageUrls[0]} // İlk resim
                   alt={`Gallery image ${index + 1}`}
-                  className="max-h-full max-w-full object-contain"
+                  className="max-h-full max-w-full object-contain cursor-pointer"
+                  onClick={() => handleImageClick(item.link)} // Resme tıklandığında habere yönlendir
                 />
               </div>
             ))}
