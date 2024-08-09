@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchRssFeed } from "../utils/rssParser";
 import { FiRefreshCcw, FiTrash } from "react-icons/fi";
 import Slider from "react-slick";
+import Modal from "react-modal";
 import { NextArrow, PrevArrow } from "./Arrows";
 
 interface RssColumnProps {
@@ -13,6 +14,7 @@ interface RssColumnProps {
 const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
   const [feedItems, setFeedItems] = useState<any[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>([]); // Galeri için
+  const [isOpen, setIsOpen] = useState(false); // Modal açma/kapatma durumu
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -55,7 +57,7 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
 
         // Galeri için sadece ilk resimleri al
         const gallery = items
-          .map((item) => item.imageUrls[0]) // İlk resim
+          .flatMap((item) => item.imageUrls) // Tüm resimler
           .filter((url) => url); // Geçerli URL'leri al
 
         setGalleryImages(gallery);
@@ -104,11 +106,19 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
 
       // Galeri için sadece ilk resimleri al
       const gallery = items
-        .map((item) => item.imageUrls[0]) // İlk resim
+        .flatMap((item) => item.imageUrls) // Tüm resimler
         .filter((url) => url); // Geçerli URL'leri al
 
       setGalleryImages(gallery);
     }
+  };
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
   };
 
   const settings = {
@@ -140,35 +150,51 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
         </div>
       </div>
       {/* Galeri */}
-      {galleryImages.length > 0 && (
-        <Slider {...settings} className="mb-6">
-          {galleryImages.map((imageUrl, index) => (
-            <div key={index}>
-              <img
-                src={imageUrl}
-                alt={`Gallery image ${index + 1}`}
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          ))}
-        </Slider>
-      )}
+      <div onClick={openModal}>
+        {galleryImages.length > 0 && (
+          <img
+            src={galleryImages[0]} // İlk resmi gösteriyoruz
+            alt="Gallery Thumbnail"
+            className="w-full h-auto object-cover cursor-pointer"
+          />
+        )}
+      </div>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={closeModal}
+        contentLabel="Image Carousel"
+        className="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center"
+        overlayClassName="fixed inset-0 z-40"
+      >
+        <div className="w-full h-full max-w-5xl p-4 bg-white rounded-lg">
+          <Slider {...settings}>
+            {galleryImages.map((imageUrl, index) => (
+              <div
+                key={index}
+                className="flex justify-center items-center h-full"
+              >
+                <img
+                  src={imageUrl}
+                  alt={`Gallery image ${index + 1}`}
+                  className="max-h-full max-w-full object-contain"
+                />
+              </div>
+            ))}
+          </Slider>
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 text-white text-2xl"
+          >
+            X
+          </button>
+        </div>
+      </Modal>
+
       {feedItems.length > 0 ? (
         feedItems.map((item, index) => (
           <div key={index} className="mb-4 border-b pb-4">
-            {item.imageUrls.length > 0 && (
-              <Slider>
-                {item.imageUrls.map((imageUrl: string, imgIndex: number) => (
-                  <div key={imgIndex}>
-                    <img
-                      src={imageUrl}
-                      alt={item.title}
-                      className="mb-2 w-full h-auto object-cover"
-                    />
-                  </div>
-                ))}
-              </Slider>
-            )}
             <h3 className="font-semibold text-lg mt-2">{item.title}</h3>
             <p className="text-sm">{item.description}</p>
             <p className="text-xs text-gray-600">{item.pubDate}</p>
