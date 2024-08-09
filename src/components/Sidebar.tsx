@@ -24,27 +24,34 @@ const Sidebar: React.FC<SidebarProps> = ({ onAddSource }) => {
 
   return (
     <div className="flex-none w-80 bg-gray-200 p-4 ">
-      <h2 className="text-lg font-bold mb-4">RSS Kaynağı Ekle</h2>
+      <h2 className="text-4xl font-semibold text-blue-600/100 dark:text-blue-500/100 mb-4 mt-32 text-center drop-shadow-md">
+        RSS Reader
+      </h2>
       <input
         type="text"
-        placeholder="Name"
+        placeholder="Ad"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full mb-2 p-2 border border-gray-300 rounded"
+        className="w-3/4 mb-3 p-2 ml-8 border border-gray-300 rounded"
       />
       <input
         type="text"
         placeholder="URL"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        className="w-full mb-2 p-2 border border-gray-300 rounded"
+        className="w-3/4 mb-3 p-2 ml-8 border border-gray-300 rounded"
       />
-      <button
-        onClick={handleAddSource}
-        className="w-full bg-blue-500 text-white p-2 rounded"
-      >
-        Kaynağı Ekle
-      </button>
+
+      <div className="ml-5">
+        <button
+          onClick={handleAddSource}
+          className="relative inline-flex items-center justify-center p-0.5 mb-2 me-10 ml-14 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800"
+        >
+          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+            Kaynak Ekle
+          </span>
+        </button>
+      </div>
     </div>
   );
 };
