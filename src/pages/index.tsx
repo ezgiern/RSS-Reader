@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import RssColumn from "../components/RssColumn";
-import { getAllRssSources, deleteRssSource } from "../utils/db";
+import { getAllRssSources, deleteRssSource, addRssSource } from "../utils/db";
 
 const Home: React.FC = () => {
-  const [sources, setSources] = useState<{ name: string; url: string }[]>([]);
+  const [sources, setSources] = useState<
+    { id: number; name: string; url: string }[]
+  >([]);
 
+  // RSS kaynaklarından veri çekiyoruz
   useEffect(() => {
     const fetchSources = async () => {
       const allSources = await getAllRssSources();
@@ -15,6 +18,7 @@ const Home: React.FC = () => {
     fetchSources();
   }, []);
 
+  // Kaynakları aldıktan sonra workerları başlatıyoruz + kaynaklar değiştiyse günceller
   useEffect(() => {
     const startWorkers = () => {
       const worker1 = new Worker(
@@ -38,6 +42,7 @@ const Home: React.FC = () => {
       worker1.onmessage = handleWorkerMessage;
       worker2.onmessage = handleWorkerMessage;
 
+      // Bu fonksiyonla 5 dakikada bir workerlara kaynak gönderiyoruz
       setInterval(() => {
         const half = Math.ceil(sources.length / 2);
 
@@ -52,7 +57,7 @@ const Home: React.FC = () => {
         sourcesForWorker2.forEach((source) =>
           worker2.postMessage({ url: source.url })
         );
-      }, 300000); // 5 dakikada bir çalışır
+      }, 300000); // 5 dakikada bir çalışır + 300000ms=5dk
     };
 
     if (sources.length > 0) {
@@ -60,24 +65,29 @@ const Home: React.FC = () => {
     }
   }, [sources]);
 
-  const handleAddSource = (newSource: { name: string; url: string }) => {
-    setSources((prevSources) => [...prevSources, newSource]);
+  const handleAddSource = async (newSource: { name: string; url: string }) => {
+    const id = await addRssSource(newSource); // Yeni kaynağı ekle ve id'sini al
+    setSources((prevSources) => [
+      ...prevSources,
+      { ...newSource, id: id as number },
+    ]);
   };
 
-  const handleDeleteSource = async (url: string) => {
-    await deleteRssSource(url);
+  const handleDeleteSource = async (id: number) => {
+    await deleteRssSource(id);
     setSources((prevSources) =>
-      prevSources.filter((source) => source.url !== url)
+      prevSources.filter((source) => source.id !== id)
     );
   };
 
   return (
     <div className="flex">
       <Sidebar onAddSource={handleAddSource} />
-      <div className="flex flex-nowrap">
+      <div className="flex flex-nowrap bg-gray-200 shadow-lg">
         {sources.map((source, index) => (
           <RssColumn
-            key={index}
+            key={source.id} // Her source için unique id kullanıyoruz
+            id={source.id} // id'yi burada pass ediyoruz
             name={source.name}
             url={source.url}
             onDeleteSource={handleDeleteSource}

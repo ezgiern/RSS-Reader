@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onAddSource }) => {
   const handleAddSource = async () => {
     if (name && url) {
       const newSource = { name, url };
-      await addRssSource(name, url);
+      await addRssSource({ name, url });
       onAddSource(newSource);
       setName("");
       setUrl("");
@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onAddSource }) => {
     <>
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 left-4 z-50 p-2 bg-blue-500 text-white rounded-full"
+        className="fixed z-50 p-1 bg-blue-500 text-white rounded-full"
       >
         <FiMenu size={24} />
       </button>

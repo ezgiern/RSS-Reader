@@ -6,12 +6,18 @@ import Modal from "react-modal";
 import { NextArrow, PrevArrow } from "./Arrows";
 
 interface RssColumnProps {
+  id: number;
   name: string;
   url: string;
-  onDeleteSource: (url: string) => void;
+  onDeleteSource: (id: number) => void; // id üzerinden silme işlemi yapılacak
 }
 
-const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
+const RssColumn: React.FC<RssColumnProps> = ({
+  id,
+  name,
+  url,
+  onDeleteSource,
+}) => {
   const [feedItems, setFeedItems] = useState<any[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>([]); // Galeri için
   const [isOpen, setIsOpen] = useState(false); // Modal açma/kapatma durumu
@@ -147,7 +153,7 @@ const RssColumn: React.FC<RssColumnProps> = ({ name, url, onDeleteSource }) => {
             size={24}
           />
           <FiTrash
-            onClick={() => onDeleteSource(url)}
+            onClick={() => onDeleteSource(id)}
             className="text-red-500 cursor-pointer"
             size={24}
           />
